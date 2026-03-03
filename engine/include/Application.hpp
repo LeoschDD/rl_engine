@@ -1,0 +1,6 @@
+#inc
+
+class Application
+{
+
+}

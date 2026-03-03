@@ -6,8 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(external/raylib)
-add_subdirectory(external/imgui)
-add_subdirectory(external/rlImGui)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(imgui)
+include(rlimgui)
 
 add_subdirectory(engine)
 add_subdirectory(application)
