@@ -15,8 +15,8 @@ target_include_directories(rl_engine
 )
 
 target_precompile_headers(rl_engine 
-    PRIVATE 
-        include/core/headers.h
+    PUBLIC 
+        include/Headers.hpp
 )
 
 target_compile_features(rl_engine 

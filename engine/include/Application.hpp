@@ -1,6 +1,0 @@
-#inc
-
-class Application
-{
-
-}
