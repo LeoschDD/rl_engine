@@ -10,13 +10,13 @@ target_sources(rl_engine
 )
 
 target_include_directories(rl_engine
-    PUBLIC 
+    PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_precompile_headers(rl_engine 
     PUBLIC 
-        include/Headers.hpp
+        include/Core/Headers.hpp
 )
 
 target_compile_features(rl_engine 
