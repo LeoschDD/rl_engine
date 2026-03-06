@@ -7,3 +7,9 @@
 [submodule "external/rlImGui"]
 	path = external/rlImGui
 	url = https://github.com/raylib-extras/rlImGui.git
+[submodule "external/JoltPhysics"]
+	path = external/JoltPhysics
+	url = https://github.com/jrouwe/JoltPhysics.git
+[submodule "external/box2d"]
+	path = external/box2d
+	url = https://github.com/erincatto/box2d.git

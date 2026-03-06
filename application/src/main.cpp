@@ -20,33 +20,16 @@ public:
     rle::Node3D* target{nullptr};
 };
 
-class CubeNode : public rle::Node3D
+class CubeNode : public rle::NodeMesh3D
 {
-    float size_;
-    Color color_;
-
-protected:
-    void OnRender3D() override
-    {
-        Vector3 pos = GetGlobalPosition();
-        Quaternion rot = GetGlobalRotation();
-        Vector3 scl = GetGlobalScale();
-
-        Vector3 axis;
-        float angle;
-        QuaternionToAxisAngle(rot, &axis, &angle);
-
-        rlPushMatrix();
-            rlTranslatef(pos.x, pos.y, pos.z);
-            rlRotatef(angle * RAD2DEG, axis.x, axis.y, axis.z);
-            rlScalef(scl.x, scl.y, scl.z);
-            DrawCube({0, 0, 0}, size_, size_, size_, color_);
-            DrawCubeWires({0, 0, 0}, size_, size_, size_, BLACK);
-        rlPopMatrix();
-    }
-
 public:
-    CubeNode(float size, Color color) : size_(size), color_(color) {}
+    CubeNode(float scale, Color color)
+    {
+        this->SetScale({scale, scale, scale});
+        Material m = LoadMaterialDefault();
+        m.maps->color = color;
+        this->SetMaterial(m);
+    }
 };
 
 class RotatingParent : public CubeNode
@@ -93,12 +76,21 @@ public:
     }
 };
 
+class NodeGrid : public rle::Node3D
+{
+protected:
+    void OnRender3D() override
+    {
+        DrawGrid(1000, 2.0f);
+    }
+};
+
 class GameScene : public rle::Scene
 {
 public:
     GameScene()
     {
-        this->GetRootNode()->AddChild(std::make_unique<BackgroundControler>());
+
         auto camera = std::make_unique<MainCamera>();
 
         auto parent = std::make_unique<RotatingParent>(1.5f, RED, 1.5f);
@@ -111,8 +103,10 @@ public:
         camera->target = (rle::Node3D*)child.get();
         parent->AddChild(std::move(child));
 
+        this->GetRootNode()->AddChild(std::make_unique<BackgroundControler>());
         this->GetRootNode()->AddChild(std::move(camera));
         this->GetRootNode()->AddChild(std::move(parent));
+        this->GetRootNode()->AddChild(std::make_unique<NodeGrid>());
     }
 };
 

@@ -8,3 +8,4 @@
 #include "Nodes/NodeCamera2D.hpp"
 #include "Nodes/Node3D.hpp"
 #include "Nodes/NodeCamera3D.hpp"
+#include "Nodes/NodeMesh3D.hpp"

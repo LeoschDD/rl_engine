@@ -40,3 +40,12 @@ void rle::Node3D::LookAt(Vector3 target, Vector3 up)
     };
     rotation_ = QuaternionFromMatrix(m);
 }
+
+Matrix rle::Node3D::GetGlobalTransformMatrix()
+{
+    Matrix transform = MatrixIdentity();
+    transform = MatrixMultiply(transform, MatrixScale(GetGlobalScale().x, GetGlobalScale().y, GetGlobalScale().z));
+    transform = MatrixMultiply(transform, QuaternionToMatrix(GetGlobalRotation()));
+    transform = MatrixMultiply(transform, MatrixTranslate(GetGlobalPosition().x, GetGlobalPosition().y, GetGlobalPosition().z));
+    return transform;
+}

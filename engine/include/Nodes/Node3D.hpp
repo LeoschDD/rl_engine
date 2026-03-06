@@ -39,6 +39,7 @@ namespace rle
         Vector3 GetGlobalPosition() const {return global_position_;}
         Quaternion GetGlobalRotation() const {return global_rotation_;}
         Vector3 GetGlobalScale() const {return global_scale_;}
+        Matrix GetGlobalTransformMatrix();
 
         Vector3 GetForward() const {return forward_;}
         Vector3 GetRight() const {return right_;}

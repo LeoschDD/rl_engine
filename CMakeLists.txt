@@ -9,6 +9,8 @@ add_subdirectory(external/raylib)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(imgui)
 include(rlimgui)
+add_subdirectory(external/JoltPhysics/Build)
+add_subdirectory(external/box2d)
 
 add_subdirectory(engine)
 add_subdirectory(application)

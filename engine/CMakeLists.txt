@@ -29,4 +29,6 @@ target_link_libraries(rl_engine
         raylib 
         imgui 
         rlImGui
+        Jolt
+        box2d
 )
