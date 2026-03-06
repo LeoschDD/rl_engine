@@ -12,6 +12,8 @@ target_sources(rl_engine
 target_include_directories(rl_engine
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/external/raylib/examples/shaders
 )
 
 target_precompile_headers(rl_engine 

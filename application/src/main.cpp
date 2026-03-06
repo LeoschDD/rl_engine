@@ -1,6 +1,5 @@
 #include <rlEngine.hpp>
 #include <Nodes/NodeCamera3D.hpp>
-#include <rlgl.h>
 
 class MainCamera : public rle::NodeCamera3D
 {
@@ -90,9 +89,8 @@ class GameScene : public rle::Scene
 public:
     GameScene()
     {
-
         auto camera = std::make_unique<MainCamera>();
-
+        
         auto parent = std::make_unique<RotatingParent>(1.5f, RED, 1.5f);
         parent->SetName("Parent");
 
