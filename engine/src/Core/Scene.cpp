@@ -1,4 +1,5 @@
 #include "Core/Scene.hpp"
+#include "Core/Application.hpp"
 
 void rle::Scene::Input()
 {
@@ -27,8 +28,7 @@ void rle::Scene::Render()
     root_node_->Render();
 }
 
-rle::Scene::Scene()
-    : root_node_(std::make_unique<Node>())
+rle::Scene::Scene() : root_node_(std::make_unique<Node>())
 {
     root_node_->scene_ = this;
     root_node_->SetName("Root");
@@ -50,4 +50,13 @@ void rle::Scene::SetCamera2D(Camera2D* camera)
 {
     if (camera) active_camera3D_ = nullptr;
     active_camera2D_ = camera;
+}
+rle::ResourceManager* rle::Scene::Resources()
+{
+    if (!application_) 
+    {
+        RLE_LOG_ERROR("Resources: scene has no associated application");
+        return nullptr;
+    }
+    return application_->Resources();
 }

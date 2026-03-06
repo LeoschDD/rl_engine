@@ -1,5 +1,4 @@
 #include <rlEngine.hpp>
-#include <Nodes/NodeCamera3D.hpp>
 
 class MainCamera : public rle::NodeCamera3D
 {
@@ -87,7 +86,9 @@ protected:
 class GameScene : public rle::Scene
 {
 public:
-    GameScene()
+    GameScene() = default;
+
+    void OnAttach() override
     {
         auto camera = std::make_unique<MainCamera>();
         

@@ -10,11 +10,14 @@ void rle::Application::Init(const ApplicationSpecification& app_spec)
 rle::Application::Application(const ApplicationSpecification& app_spec)
 {
     Init(app_spec);
+    resources_ = std::make_unique<ResourceManager>();
 }
 
 rle::Application::~Application()
 {
+    if (scene_) scene_->OnDetach();
     scene_.reset();
+    resources_.reset();
     CloseAudioDevice();
     CloseWindow();
 }
@@ -39,5 +42,17 @@ void rle::Application::Run()
         ClearBackground(scene_->background_color_);
         scene_->Render();
         EndDrawing();
+    }
+}
+
+void rle::Application::SetScene(std::unique_ptr<Scene> scene)
+{
+    if (scene_) scene_->OnDetach();
+    scene_ = std::move(scene);
+
+    if (scene_) 
+    {
+        scene_->application_ = this;
+        scene_->OnAttach();
     }
 }

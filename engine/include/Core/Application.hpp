@@ -2,6 +2,7 @@
 
 #include "Core/Headers.hpp"
 #include "Core/Scene.hpp"
+#include "Core/ResourceManager.hpp"
 
 namespace rle
 {
@@ -18,6 +19,7 @@ namespace rle
     private:
         bool running_{true};
         std::unique_ptr<Scene> scene_;
+        std::unique_ptr<ResourceManager> resources_;
 
     private:
         void Init(const ApplicationSpecification& app_spec);
@@ -29,6 +31,7 @@ namespace rle
         void Run();
 
         [[nodiscard]] Scene* GetScene() {return scene_.get();}
-        void SetScene(std::unique_ptr<Scene> scene) {scene_ = std::move(scene);}
+        void SetScene(std::unique_ptr<Scene> scene);
+        ResourceManager* Resources() {return resources_.get();}
     };
 }
