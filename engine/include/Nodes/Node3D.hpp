@@ -14,8 +14,8 @@ namespace rle
         Quaternion global_rotation_{QuaternionIdentity()};
         Vector3 global_scale_{1.0f, 1.0f, 1.0f};
 
-        Vector3 forward_{1.0f, 0.0f, 0.0f};
-        Vector3 right_{0.0f, 0.0f, 1.0f};
+        Vector3 forward_{0.0f, 0.0f, -1.0f};
+        Vector3 right_{1.0f, 0.0f, 0.0f};
         Vector3 up_{0.0f, 1.0f, 0.0f};
 
     protected:
@@ -24,9 +24,9 @@ namespace rle
 
     public:
         void Translate(Vector3 offset) {position_ = Vector3Add(position_, offset);}
-        void Rotate(Quaternion rotation) {rotation_ = QuaternionMultiply(rotation, rotation_);}
+        void Rotate(Quaternion rotation) {rotation_ = QuaternionNormalize(QuaternionMultiply(rotation, rotation_));}
         void Rotate(Vector3 axis, float angle) {Rotate(QuaternionFromAxisAngle(axis, angle));}
-        void RotateLocal(Quaternion rotation) {rotation_ = QuaternionMultiply(rotation_, rotation);}
+        void RotateLocal(Quaternion rotation) {rotation_ = QuaternionNormalize(QuaternionMultiply(rotation_, rotation));}
         void RotateLocal(Vector3 axis, float angle) {RotateLocal(QuaternionFromAxisAngle(axis, angle));}
 
         void SetPosition(Vector3 position) {position_ = position;}

@@ -22,10 +22,8 @@ namespace rle
         void Update(const float dt);
         void Render();
 
-    protected:
-        Scene();
-
     public:
+        Scene();
         virtual ~Scene();
 
         [[nodiscard]] Node* GetRootNode() {return root_node_.get();}

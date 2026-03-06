@@ -15,8 +15,10 @@ void rle::Node3D::_Update(const float dt)
         global_rotation_ = rotation_;
         global_scale_ = scale_;
     }
-    forward_ = Vector3RotateByQuaternion({1.0f, 0.0f, 0.0f}, global_rotation_);
-    right_ = Vector3RotateByQuaternion({0.0f, 0.0f, 1.0f}, global_rotation_);
+    global_rotation_ = QuaternionNormalize(global_rotation_);
+    
+    forward_ = Vector3RotateByQuaternion({0.0f, 0.0f, -1.0f}, global_rotation_);
+    right_ = Vector3RotateByQuaternion({1.0f, 0.0f, 0.0f}, global_rotation_);
     up_ = Vector3RotateByQuaternion({0.0f, 1.0f, 0.0f}, global_rotation_);
     _UpdateNode3D(dt);
 }

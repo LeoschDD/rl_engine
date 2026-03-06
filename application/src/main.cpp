@@ -1,118 +1,79 @@
 #include <rlEngine.hpp>
+#include <Nodes/NodeCamera3D.hpp>
+#include <rlgl.h>
 
-static constexpr float TILE_W = 80.0f;
-static constexpr float TILE_H = 110.0f;
-static constexpr float GRAVITY = 900.0f;
-static constexpr float JUMP_FORCE = -450.0f;
-static constexpr float MOVE_SPEED = 250.0f;
-
-static std::vector<Rectangle> g_platforms;
-
-class Player : public rle::NodeSprite2D
+class CubeNode : public rle::Node3D
 {
-private:
-    float velocity_y_{0.0f};
-    bool on_ground_{false};
+    float size_;
+    Color color_;
+
+protected:
+    void OnRender3D() override
+    {
+        Vector3 pos = GetGlobalPosition();
+        Quaternion rot = GetGlobalRotation();
+        Vector3 scl = GetGlobalScale();
+
+        Vector3 axis;
+        float angle;
+        QuaternionToAxisAngle(rot, &axis, &angle);
+
+        rlPushMatrix();
+            rlTranslatef(pos.x, pos.y, pos.z);
+            rlRotatef(angle * RAD2DEG, axis.x, axis.y, axis.z);
+            rlScalef(scl.x, scl.y, scl.z);
+            DrawCube({0, 0, 0}, size_, size_, size_, color_);
+            DrawCubeWires({0, 0, 0}, size_, size_, size_, BLACK);
+        rlPopMatrix();
+    }
+
+public:
+    CubeNode(float size, Color color) : size_(size), color_(color) {}
+};
+
+class RotatingParent : public CubeNode
+{
+    float speed_;
 
 protected:
     void OnUpdate(const float dt) override
     {
-        Vector2 pos = GetPosition();
-
-        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) pos.x -= MOVE_SPEED * dt;
-        if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) pos.x += MOVE_SPEED * dt;
-        if (on_ground_ && IsKeyPressed(KEY_SPACE)) velocity_y_ = JUMP_FORCE;
-
-        Rectangle rect = {pos.x, GetPosition().y, TILE_W, TILE_H};
-        for (const auto& plat : g_platforms)
-        {
-            if (CheckCollisionRecs(rect, plat))
-            {
-                if (pos.x < GetPosition().x) pos.x = plat.x + plat.width;
-                else pos.x = plat.x - TILE_W;
-                rect.x = pos.x;
-            }
-        }
-
-        velocity_y_ += GRAVITY * dt;
-        pos.y += velocity_y_ * dt;
-
-        on_ground_ = false;
-        rect = {pos.x, pos.y, TILE_W, TILE_H};
-        for (const auto& plat : g_platforms)
-        {
-            if (CheckCollisionRecs(rect, plat))
-            {
-                if (velocity_y_ > 0)
-                {
-                    pos.y = plat.y - TILE_H;
-                    velocity_y_ = 0;
-                    on_ground_ = true;
-                }
-                else
-                {
-                    pos.y = plat.y + plat.height;
-                    velocity_y_ = 0;
-                }
-                rect.y = pos.y;
-            }
-        }
-
-        SetPosition(pos);
+        Rotate({0, 1, 0}, speed_ * dt);
     }
-};
 
-class PlatformRenderer : public rle::Node2D
-{
-protected:
-    void OnRender2D() override
-    {
-        for (const auto& plat : g_platforms)
-            DrawRectangleRec(plat, DARKGREEN);
-    }
-};
-
-class GameScene : public rle::Scene
-{
 public:
-    GameScene()
-    {
-        SetBackgroundColor(SKYBLUE);
-
-        g_platforms = {
-            {-200.0f, 500.0f, 1600.0f, 40.0f},
-            {250.0f, 400.0f, 200.0f, 20.0f},
-            {550.0f, 320.0f, 200.0f, 20.0f},
-            {50.0f, 240.0f, 200.0f, 20.0f},
-            {400.0f, 160.0f, 200.0f, 20.0f},
-            {800.0f, 400.0f, 150.0f, 20.0f},
-            {1000.0f, 300.0f, 200.0f, 20.0f},
-        };
-
-        auto platforms = std::make_unique<PlatformRenderer>();
-        platforms->SetName("Platforms");
-        GetRootNode()->AddChild(std::move(platforms));
-
-        Texture2D tex = LoadTexture("../../application/resources/assets/player_tilesheet.png");
-        auto player = std::make_unique<Player>();
-        player->SetName("Player");
-        player->SetTexture(tex);
-        player->SetSourceRect({0.0f, 0.0f, TILE_W, TILE_H});
-        player->SetPosition({100.0f, 380.0f});
-
-        auto camera = std::make_unique<rle::NodeCamera2D>();
-        camera->SetName("Camera");
-        camera->Activate();
-        player->AddChild(std::move(camera));
-
-        GetRootNode()->AddChild(std::move(player));
-    }
+    RotatingParent(float size, Color color, float speed)
+        : CubeNode(size, color), speed_(speed) {}
 };
 
 int main()
 {
-    rle::ApplicationSpecification spec{"Platformer", 800, 600, 60};
-    rle::Application app(spec);
-    app.SetScene(std::make_unique<GameScene>());
+    rle::Application app({"3D Cubes", 1280, 720, 60});
+    auto scene = std::make_unique<rle::Scene>();
+    scene->SetBackgroundColor(DARKGRAY);
+
+    // Camera: look from (0,5,10) toward the origin
+    auto camera = std::make_unique<rle::NodeCamera3D>();
+    camera->SetName("Camera");
+    camera->SetPosition({0, 5, 10});
+
+    camera->Rotate({1, 0, 0}, -0.46f);
+    camera->Activate();
+
+    // Parent cube: rotating at origin
+    auto parent = std::make_unique<RotatingParent>(1.5f, RED, 1.5f);
+    parent->SetName("Parent");
+
+    // Child cube: offset from parent
+    auto child = std::make_unique<CubeNode>(1.0f, BLUE);
+    child->SetName("Child");
+    child->SetPosition({4, 0, 0});
+
+    parent->AddChild(std::move(child));
+
+    scene->GetRootNode()->AddChild(std::move(camera));
+    scene->GetRootNode()->AddChild(std::move(parent));
+
+    app.SetScene(std::move(scene));
     app.Run();
 }

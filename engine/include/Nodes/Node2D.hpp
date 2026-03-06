@@ -14,8 +14,8 @@ namespace rle
         float global_rotation_{0.0f};
         Vector2 global_scale_{1.0f, 1.0f};
 
-        Vector2 forward_{1.0f, 0.0f};
-        Vector2 right_{0.0f, -1.0f};
+        Vector2 right_{1.0f, 0.0f};
+        Vector2 up_{0.0f, -1.0f};
 
     protected:
         void _Update(const float dt) override;
@@ -35,7 +35,7 @@ namespace rle
         float GetGlobalRotation() const {return global_rotation_;}
         Vector2 GetGlobalScale() const {return global_scale_;}
 
-        Vector2 GetForward() const {return forward_;}
         Vector2 GetRight() const {return right_;}
+        Vector2 GetUp() const {return up_;}
     };
 }

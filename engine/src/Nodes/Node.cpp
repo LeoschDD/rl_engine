@@ -79,12 +79,6 @@ void rle::Node::Render3D()
     }
 }
 
-void rle::Node::PropagateScene(Scene* scene)
-{
-    scene_ = scene;
-    for (auto& child : children_) child->PropagateScene(scene);
-}
-
 bool rle::Node::HasAncestor(const Node* ancestor) const
 {
     const Node* current = parent_;
@@ -98,42 +92,28 @@ bool rle::Node::HasAncestor(const Node* ancestor) const
 
 void rle::Node::SetParent(Node* parent)
 {
-    if (parent == nullptr)
-    { 
-        RLE_LOG_ERROR("SetParent: parent must not be null"); 
-        return; 
-    }
-    if (parent == this)
-    {
-        RLE_LOG_ERROR("SetParent: a node cannot be its own parent"); 
-        return; 
-    }
-    if (parent->HasAncestor(this)) 
-    { 
-        RLE_LOG_ERROR("SetParent: circular hierarchy detected"); 
-        return; 
-    }
+    if (!parent) { RLE_LOG_ERROR("SetParent: parent must not be null"); return; }
+    if (parent == this) { RLE_LOG_ERROR("SetParent: a node cannot be its own parent"); return; }
     if (parent_ == parent) return;
 
+    if (parent->HasAncestor(this))
+    {
+        RLE_LOG_ERROR("SetParent: circular hierarchy detected");
+        return;
+    }
     if (!parent_)
     {
-        RLE_LOG_ERROR("SetParent: node has no current parent, use AddChild() instead");
+        RLE_LOG_ERROR("SetParent: node has no current parent (use AddChild to attach initially)");
         return;
     }
-    auto& siblings = parent_->children_;
-    auto it = std::find_if(siblings.begin(), siblings.end(),
-        [this](const auto& c) { return c.get() == this; });
-    if (it == siblings.end())
-    {
-        RLE_LOG_ERROR("SetParent: node not found in current parent's children");
-        return;
-    }
-    std::unique_ptr<Node> self = std::move(*it);
-    siblings.erase(it);
+    std::unique_ptr<Node> self = DetachSelf();
 
-    self->parent_ = parent;
-    self->PropagateScene(parent->scene_);
-    parent->children_.push_back(std::move(self));
+    if (!self)
+    {
+        RLE_LOG_ERROR("SetParent: failed to detach from old parent");
+        return;
+    }
+    parent->AddChild(std::move(self));
 }
 
 void rle::Node::AddChild(std::unique_ptr<Node> child)
@@ -148,13 +128,17 @@ void rle::Node::AddChild(std::unique_ptr<Node> child)
         RLE_LOG_ERROR("AddChild: a node cannot be its own child"); 
         return; 
     }
-    if (child->HasAncestor(this))
+    if (child->parent_ != nullptr)
+    {
+        RLE_LOG_ERROR("AddChild: child already has a parent (detach first)");
+        return;
+    }
+    if (this->HasAncestor(child.get()))
     {
         RLE_LOG_ERROR("AddChild: circular hierarchy detected"); 
         return; 
     }
     child->parent_ = this;
-    child->PropagateScene(scene_);
     children_.push_back(std::move(child));
     if (in_tree_) children_.back()->EnterTree();
 }
@@ -175,10 +159,20 @@ std::unique_ptr<rle::Node> rle::Node::DetachChild(Node* child)
         return nullptr;
     }
     std::unique_ptr<Node> detached = std::move(*it);
-    children_.erase(it);
     if (detached->in_tree_) detached->ExitTree();
+    children_.erase(it);
     detached->parent_ = nullptr;
     return detached;
+}
+
+std::unique_ptr<rle::Node> rle::Node::DetachSelf()
+{
+    if (!parent_)
+    {
+        RLE_LOG_WARN("DetachSelf: node has no parent");
+        return nullptr;
+    }
+    return parent_->DetachChild(this); 
 }
 
 void rle::Node::RemoveChild(Node* child)

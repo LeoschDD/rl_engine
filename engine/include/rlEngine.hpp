@@ -7,3 +7,4 @@
 #include "Nodes/NodeSprite2D.hpp"
 #include "Nodes/NodeCamera2D.hpp"
 #include "Nodes/Node3D.hpp"
+#include "Nodes/NodeCamera3D.hpp"
