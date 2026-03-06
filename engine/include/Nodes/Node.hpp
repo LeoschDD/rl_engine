@@ -29,6 +29,7 @@ namespace rle
         void Render2D();
         void Render3D();
 
+        void PropagateScene(Scene* scene);
         [[nodiscard]] bool HasAncestor(const Node* ancestor) const;
 
     protected:
@@ -66,6 +67,7 @@ namespace rle
         [[nodiscard]] Node* GetParent() const {return parent_;}
 
         void AddChild(std::unique_ptr<Node> child);
+        std::unique_ptr<Node> DetachChild(Node* child);
         void RemoveChild(Node* child);
         [[nodiscard]] Node* GetChild(const std::string& name) const;
 

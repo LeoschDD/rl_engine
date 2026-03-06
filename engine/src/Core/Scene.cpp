@@ -40,25 +40,14 @@ rle::Scene::~Scene()
     root_node_->ExitTree();
 }
 
-void rle::Scene::SetCamera3D(Camera3D camera)
+void rle::Scene::SetCamera3D(Camera3D* camera)
 {
-    active_camera2D_.reset();
+    if (camera) active_camera2D_ = nullptr;
     active_camera3D_ = camera;
 }
 
-void rle::Scene::ResetCamera3D()
+void rle::Scene::SetCamera2D(Camera2D* camera)
 {
-    active_camera3D_.reset();
-}
-
-void rle::Scene::SetCamera2D(Camera2D camera)
-{
-    active_camera3D_.reset();
+    if (camera) active_camera3D_ = nullptr;
     active_camera2D_ = camera;
 }
-
-void rle::Scene::ResetCamera2D()
-{
-    active_camera2D_.reset();
-}
-

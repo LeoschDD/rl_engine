@@ -18,7 +18,6 @@ void rle::Node2D::_Update(const float dt)
         global_rotation_ = rotation_;
         global_scale_ = scale_;
     }
-
     forward_ = {std::cos(global_rotation_), std::sin(global_rotation_)};
     right_ = {std::sin(global_rotation_), -std::cos(global_rotation_)};
     _UpdateNode2D(dt);

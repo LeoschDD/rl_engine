@@ -59,9 +59,6 @@ protected:
         }
 
         SetPosition(pos);
-
-        Camera2D* cam = GetScene()->GetCamera2D();
-        if (cam) cam->target = {pos.x + TILE_W / 2.0f, pos.y + TILE_H / 2.0f};
     }
 };
 
@@ -81,12 +78,6 @@ public:
     GameScene()
     {
         SetBackgroundColor(SKYBLUE);
-
-        Camera2D cam{};
-        cam.offset = {400.0f, 300.0f};
-        cam.target = {400.0f, 300.0f};
-        cam.zoom = 1.0f;
-        SetCamera2D(cam);
 
         g_platforms = {
             {-200.0f, 500.0f, 1600.0f, 40.0f},
@@ -108,6 +99,12 @@ public:
         player->SetTexture(tex);
         player->SetSourceRect({0.0f, 0.0f, TILE_W, TILE_H});
         player->SetPosition({100.0f, 380.0f});
+
+        auto camera = std::make_unique<rle::NodeCamera2D>();
+        camera->SetName("Camera");
+        camera->Activate();
+        player->AddChild(std::move(camera));
+
         GetRootNode()->AddChild(std::move(player));
     }
 };

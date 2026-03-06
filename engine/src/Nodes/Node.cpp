@@ -14,13 +14,14 @@ void rle::Node::EnterTree()
 
 void rle::Node::ExitTree()
 {
-    in_tree_ = false;
-    _ExitTree();
-    OnExitTree();
-    for (auto& child : children_) 
+    for (auto& child : children_)
     {
         child->ExitTree();
     }
+    in_tree_ = false;
+    _ExitTree();
+    OnExitTree();
+    scene_ = nullptr;
 }
 
 void rle::Node::Input()
@@ -78,6 +79,12 @@ void rle::Node::Render3D()
     }
 }
 
+void rle::Node::PropagateScene(Scene* scene)
+{
+    scene_ = scene;
+    for (auto& child : children_) child->PropagateScene(scene);
+}
+
 bool rle::Node::HasAncestor(const Node* ancestor) const
 {
     const Node* current = parent_;
@@ -113,7 +120,6 @@ void rle::Node::SetParent(Node* parent)
         RLE_LOG_ERROR("SetParent: node has no current parent, use AddChild() instead");
         return;
     }
-
     auto& siblings = parent_->children_;
     auto it = std::find_if(siblings.begin(), siblings.end(),
         [this](const auto& c) { return c.get() == this; });
@@ -122,12 +128,11 @@ void rle::Node::SetParent(Node* parent)
         RLE_LOG_ERROR("SetParent: node not found in current parent's children");
         return;
     }
-
     std::unique_ptr<Node> self = std::move(*it);
     siblings.erase(it);
 
     self->parent_ = parent;
-    self->scene_  = parent->scene_;
+    self->PropagateScene(parent->scene_);
     parent->children_.push_back(std::move(self));
 }
 
@@ -149,37 +154,43 @@ void rle::Node::AddChild(std::unique_ptr<Node> child)
         return; 
     }
     child->parent_ = this;
-    child->scene_ = scene_;
+    child->PropagateScene(scene_);
     children_.push_back(std::move(child));
-    if (in_tree_)
-        children_.back()->EnterTree();
+    if (in_tree_) children_.back()->EnterTree();
 }
 
-void rle::Node::RemoveChild(Node* child)
+std::unique_ptr<rle::Node> rle::Node::DetachChild(Node* child)
 {
-    if (!child) 
-    { 
-        RLE_LOG_WARN("RemoveChild: child is null"); 
-        return; 
+    if (!child)
+    {
+        RLE_LOG_WARN("DetachChild: child is null");
+        return nullptr;
     }
     auto it = std::find_if(children_.begin(), children_.end(),
         [child](const auto& c) { return c.get() == child; });
 
-    if (it == children_.end()) 
-    { 
-        RLE_LOG_WARN("RemoveChild: node is not a child of this node"); 
-        return; 
+    if (it == children_.end())
+    {
+        RLE_LOG_WARN("DetachChild: node is not a child of this node");
+        return nullptr;
     }
-    (*it)->ExitTree();
+    std::unique_ptr<Node> detached = std::move(*it);
     children_.erase(it);
+    if (detached->in_tree_) detached->ExitTree();
+    detached->parent_ = nullptr;
+    return detached;
+}
+
+void rle::Node::RemoveChild(Node* child)
+{
+    auto detached = DetachChild(child);
 }
 
 rle::Node* rle::Node::GetChild(const std::string& name) const
 {
     for (const auto& child : children_)
     {
-        if (child->name_ == name)
-            return child.get();
+        if (child->name_ == name) return child.get();
     }
     return nullptr;
 }
