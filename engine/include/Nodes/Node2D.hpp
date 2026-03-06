@@ -24,6 +24,7 @@ namespace rle
     public:
         void Translate(Vector2 offset) {position_ = Vector2Add(position_, offset);}
         void Rotate(float angle) {rotation_ += angle;}
+        void LookAt(Vector2 target);
 
         void SetPosition(Vector2 position) {position_ = position;}
         void SetRotation(float rotation) {rotation_ = rotation;}

@@ -22,3 +22,21 @@ void rle::Node3D::_Update(const float dt)
     up_ = Vector3RotateByQuaternion({0.0f, 1.0f, 0.0f}, global_rotation_);
     _UpdateNode3D(dt);
 }
+
+void rle::Node3D::LookAt(Vector3 target, Vector3 up)
+{
+    Vector3 dir = Vector3Subtract(target, position_);
+    if (Vector3Length(dir) < 0.0001f) return;
+    dir = Vector3Normalize(dir);
+    Vector3 back = Vector3Negate(dir);
+    Vector3 right = Vector3Normalize(Vector3CrossProduct(up, back));
+    Vector3 orthogonal_up = Vector3CrossProduct(back, right);
+
+    Matrix m = {
+        right.x, orthogonal_up.x, back.x, 0,
+        right.y, orthogonal_up.y, back.y, 0,
+        right.z, orthogonal_up.z, back.z, 0,
+        0,       0,               0,      1
+    };
+    rotation_ = QuaternionFromMatrix(m);
+}

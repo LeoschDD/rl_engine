@@ -28,6 +28,7 @@ namespace rle
         void Rotate(Vector3 axis, float angle) {Rotate(QuaternionFromAxisAngle(axis, angle));}
         void RotateLocal(Quaternion rotation) {rotation_ = QuaternionNormalize(QuaternionMultiply(rotation_, rotation));}
         void RotateLocal(Vector3 axis, float angle) {RotateLocal(QuaternionFromAxisAngle(axis, angle));}
+        void LookAt(Vector3 target, Vector3 up);
 
         void SetPosition(Vector3 position) {position_ = position;}
         void SetRotation(Quaternion rotation) {rotation_ = rotation;}
