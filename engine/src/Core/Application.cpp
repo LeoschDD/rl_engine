@@ -18,7 +18,6 @@ rle::Application::~Application()
     if (scene_) scene_->OnDetach();
     scene_.reset();
     resources_.reset();
-    CloseAudioDevice();
     CloseWindow();
 }
 

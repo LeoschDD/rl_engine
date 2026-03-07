@@ -1,5 +1,10 @@
 #include "Nodes/NodeSprite2D.hpp"
 
+rle::NodeSprite2D::~NodeSprite2D()
+{
+    if (texture_.id != 0) UnloadTexture(texture_); 
+}
+
 void rle::NodeSprite2D::_Render2D()
 {
     Rectangle destination_rectangle = {

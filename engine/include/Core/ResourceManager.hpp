@@ -7,7 +7,7 @@ namespace rle
     class ResourceManager
     {
     private:
-        std::unordered_map<std::string, Shader> shaders_;
+        std::unordered_map<std::string, std::unique_ptr<Shader>> shaders_;
 
     private:
         void InitDefaultShaders();

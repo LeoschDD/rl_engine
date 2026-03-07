@@ -4,8 +4,8 @@ void rle::ResourceManager::InitDefaultShaders()
 {
     // Load and setup lighting shader
     auto lighting_shader = this->LoadShader("rle_lighting", 
-        TextFormat(RESOURCE_DIR "/shaders/lighting.vs", 330), 
-        TextFormat(RESOURCE_DIR "/shaders/lighting.fs", 330));
+        TextFormat(RESOURCE_DIR "/shaders/lighting.vs"), 
+        TextFormat(RESOURCE_DIR "/shaders/lighting.fs"));
 
     lighting_shader->locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(*lighting_shader, "viewPos");
     int ambient_location = GetShaderLocation(*lighting_shader, "ambient");
@@ -29,11 +29,11 @@ Shader* rle::ResourceManager::LoadShader(const std::string& name, const char* vs
     if (it != shaders_.end())
     {
         RLE_LOG_WARN("LoadShader: shader '%s' already loaded, returning existing", name.c_str());
-        return &it->second;
+        return it->second.get();
     }
     Shader shader = ::LoadShader(vsPath, fsPath);
-    auto [inserted, success] = shaders_.emplace(name, shader);
-    return &inserted->second;
+    auto [inserted, success] = shaders_.emplace(name, std::make_unique<Shader>(shader));
+    return inserted->second.get();
 }
 
 Shader* rle::ResourceManager::GetShader(const std::string& name)
@@ -44,7 +44,7 @@ Shader* rle::ResourceManager::GetShader(const std::string& name)
         RLE_LOG_FATAL("GetShader: shader '%s' not found", name.c_str());
         return nullptr;
     }
-    return &it->second;
+    return it->second.get();
 }
 
 bool rle::ResourceManager::HasShader(const std::string& name) const
@@ -56,7 +56,7 @@ void rle::ResourceManager::UnloadAll()
 {
     for (auto& [name, shader] : shaders_)
     {
-        ::UnloadShader(shader);
+        ::UnloadShader(*shader);
     }
     shaders_.clear();
 }

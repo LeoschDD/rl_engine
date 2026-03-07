@@ -11,9 +11,9 @@ namespace rle
         Rectangle source_rectangle_{};
 
     public:
-        ~NodeSprite2D() override { if (texture_.id != 0) UnloadTexture(texture_); }
+        ~NodeSprite2D() override;
 
-        void SetTexture(Texture2D texture) {texture_ = texture;}
+        void SetTexture(Texture2D texture) {if (texture_.id != 0) UnloadTexture(texture_); texture_ = texture;}
         void SetSourceRect(Rectangle rect) {source_rectangle_ = rect;}
         Texture2D GetTexture() const {return texture_;}
 

@@ -29,7 +29,9 @@ void rle::Node3D::LookAt(Vector3 target, Vector3 up)
     if (Vector3Length(dir) < 0.0001f) return;
     dir = Vector3Normalize(dir);
     Vector3 back = Vector3Negate(dir);
-    Vector3 right = Vector3Normalize(Vector3CrossProduct(up, back));
+    Vector3 right = Vector3CrossProduct(up, back);
+    if (Vector3Length(right) < 0.0001f) return;
+    right = Vector3Normalize(right);
     Vector3 orthogonal_up = Vector3CrossProduct(back, right);
 
     Matrix m = {
