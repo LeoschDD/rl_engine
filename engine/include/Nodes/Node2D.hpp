@@ -22,6 +22,8 @@ namespace rle
         virtual void _UpdateNode2D(const float dt) {}
 
     public:
+        void UpdateGlobalTransform();
+
         void Translate(Vector2 offset) {position_ = Vector2Add(position_, offset);}
         void Rotate(float angle) {rotation_ += angle;}
         void LookAt(Vector2 target);

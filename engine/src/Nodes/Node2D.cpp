@@ -2,6 +2,14 @@
 
 void rle::Node2D::_Update(const float dt)
 {
+    UpdateGlobalTransform();
+    right_ = {std::cos(global_rotation_), std::sin(global_rotation_)};
+    up_ = {std::sin(global_rotation_), -std::cos(global_rotation_)};
+    _UpdateNode2D(dt);
+}
+
+void rle::Node2D::UpdateGlobalTransform()
+{
     if (Node2D* parent = dynamic_cast<Node2D*>(GetParent()))
     {
         Vector2 scaled_pos = Vector2Multiply(position_, parent->GetGlobalScale());
@@ -18,9 +26,6 @@ void rle::Node2D::_Update(const float dt)
         global_rotation_ = rotation_;
         global_scale_ = scale_;
     }
-    right_ = {std::cos(global_rotation_), std::sin(global_rotation_)};
-    up_ = {std::sin(global_rotation_), -std::cos(global_rotation_)};
-    _UpdateNode2D(dt);
 }
 
 void rle::Node2D::LookAt(Vector2 target)

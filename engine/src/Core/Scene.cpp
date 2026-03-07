@@ -1,5 +1,6 @@
 #include "Core/Scene.hpp"
 #include "Core/Application.hpp"
+#include "Core/Api.hpp"
 
 void rle::Scene::Input()
 {
@@ -15,6 +16,14 @@ void rle::Scene::Render()
 {
     if (active_camera3D_)
     {
+        if (Resources())
+        {
+            if (auto* lighting_shader = Resources()->GetShader(default_lighting_shader))
+            {
+                float camera_position[3] = {active_camera3D_->position.x, active_camera3D_->position.y, active_camera3D_->position.z };
+                SetShaderValue(*lighting_shader, lighting_shader->locs[SHADER_LOC_VECTOR_VIEW], camera_position, SHADER_UNIFORM_VEC3);
+            }
+        }
         BeginMode3D(*active_camera3D_);
         root_node_->Render3D();
         EndMode3D();
@@ -51,6 +60,7 @@ void rle::Scene::SetCamera2D(Camera2D* camera)
     if (camera) active_camera3D_ = nullptr;
     active_camera2D_ = camera;
 }
+
 rle::ResourceManager* rle::Scene::Resources()
 {
     if (!application_) 

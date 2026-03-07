@@ -23,6 +23,8 @@ namespace rle
         virtual void _UpdateNode3D(const float dt) {}
 
     public:
+        void UpdateGlobalTransform();
+
         void Translate(Vector3 offset) {position_ = Vector3Add(position_, offset);}
         void Rotate(Quaternion rotation) {rotation_ = QuaternionNormalize(QuaternionMultiply(rotation, rotation_));}
         void Rotate(Vector3 axis, float angle) {Rotate(QuaternionFromAxisAngle(axis, angle));}
