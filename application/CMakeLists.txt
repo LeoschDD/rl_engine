@@ -18,8 +18,3 @@ target_link_libraries(application
     PRIVATE
         rl_engine
 )
-
-target_compile_definitions(application 
-    PRIVATE
-        RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
-)

@@ -27,5 +27,5 @@ void rle::Node2D::LookAt(Vector2 target)
 {
     Vector2 dir = Vector2Subtract(target, position_);
     if (Vector2Length(dir) < 0.0001f) return;
-    rotation_ = atan2f(dir.x, dir.y);
+    rotation_ = atan2f(dir.y, dir.x);
 }

@@ -59,8 +59,7 @@ namespace rle
 
         Node(const Node&) = delete;
         Node& operator=(const Node&) = delete;
-        Node(Node&&) = default;
-        Node& operator=(Node&&) = default;
+        Node& operator=(Node&&) = delete;
 
         void SetParent(Node* parent);
         [[nodiscard]] Node* GetParent() const {return parent_;}

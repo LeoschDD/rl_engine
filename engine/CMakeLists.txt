@@ -12,7 +12,6 @@ target_sources(rl_engine
 target_include_directories(rl_engine
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE
         ${CMAKE_SOURCE_DIR}/external/raylib/examples/shaders
 )
 
@@ -33,4 +32,9 @@ target_link_libraries(rl_engine
         rlImGui
         Jolt
         box2d
+)
+
+target_compile_definitions(rl_engine 
+    PRIVATE
+        RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
 )

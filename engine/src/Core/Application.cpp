@@ -2,8 +2,8 @@
 
 void rle::Application::Init(const ApplicationSpecification& app_spec)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(app_spec.screen_width, app_spec.screen_height, app_spec.name.c_str());
-    InitAudioDevice();
     if (app_spec.target_fps != 0) SetTargetFPS(app_spec.target_fps);
 }
 

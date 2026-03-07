@@ -14,7 +14,11 @@ namespace rle
         void _Render3D() override;
 
     public:
-        void SetMesh(const Mesh& mesh) {mesh_ = mesh;}
-        void SetMaterial(const Material& material) {material_ = material;}
+        ~NodeMesh3D();
+
+        void SetMesh(const Mesh& mesh) {UnloadMesh(mesh_); mesh_ = mesh;}
+        void SetMaterial(const Material& material) {RL_FREE(material_.maps); material_ = material;}
+        Mesh& GetMesh() {return mesh_;}
+        Material& GetMaterial() {return material_;}
     };
 }

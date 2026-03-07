@@ -9,11 +9,15 @@ namespace rle
     private:
         std::unordered_map<std::string, Shader> shaders_;
 
+    private:
+        void InitDefaultShaders();
+
     public:
+        ResourceManager();
         ~ResourceManager();
 
-        Shader& LoadShader(const std::string& name, const char* vsPath, const char* fsPath);
-        Shader& GetShader(const std::string& name);
+        Shader* LoadShader(const std::string& name, const char* vsPath, const char* fsPath);
+        Shader* GetShader(const std::string& name);
         bool HasShader(const std::string& name) const;
         void UnloadAll();
     };

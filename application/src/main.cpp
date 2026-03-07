@@ -20,13 +20,20 @@ public:
 
 class CubeNode : public rle::NodeMesh3D
 {
+private:
+    float scale_{};
+    Color color_{};
 public:
     CubeNode(float scale, Color color)
     {
-        this->SetScale({scale, scale, scale});
-        Material m = LoadMaterialDefault();
-        m.maps->color = color;
-        this->SetMaterial(m);
+        scale_ = scale;
+        color_ = color;
+    }
+    void OnEnterTree() override
+    {
+        this->SetScale({scale_, scale_, scale_});
+        GetMaterial().maps->color = color_;
+        GetMaterial().shader = *(GetScene()->Resources()->GetShader(rle::default_lighting_shader));
     }
 };
 
@@ -90,6 +97,10 @@ public:
 
     void OnAttach() override
     {
+        auto light = std::make_unique<rle::NodeLight3D>();
+        light->SetShader(Resources()->GetShader(rle::default_lighting_shader));
+        light->SetPosition({10.0f, 10.0f, 10.0f});
+
         auto camera = std::make_unique<MainCamera>();
         
         auto parent = std::make_unique<RotatingParent>(1.5f, RED, 1.5f);
@@ -102,6 +113,7 @@ public:
         camera->target = (rle::Node3D*)child.get();
         parent->AddChild(std::move(child));
 
+        this->GetRootNode()->AddChild(std::move(light));
         this->GetRootNode()->AddChild(std::make_unique<BackgroundControler>());
         this->GetRootNode()->AddChild(std::move(camera));
         this->GetRootNode()->AddChild(std::move(parent));

@@ -36,8 +36,8 @@ namespace rle
         void SetBackgroundColor(Color color) {background_color_ = color;}
 
         Camera3D* GetCamera3D() {return active_camera3D_;}
-        void SetCamera3D(Camera3D* camera);
         Camera2D* GetCamera2D() {return active_camera2D_;}
+        void SetCamera3D(Camera3D* camera);
         void SetCamera2D(Camera2D* camera);
 
         ResourceManager* Resources();
